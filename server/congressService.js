@@ -31,14 +31,43 @@ export async function fetchCongressionalActivity() {
         console.log('Senate Bills response:', JSON.stringify(senateBillsData, null, 2));
         
         // Fetch recent votes
-        const votesUrl = `https://api.congress.gov/v3/house/votes/2024/1?api_key=${CONGRESS_API_KEY}&format=json&limit=20&offset=0`;
+        const currentYear = new Date().getFullYear();
+        const votesUrl = `https://api.congress.gov/v3/house/votes/${currentYear}?api_key=${CONGRESS_API_KEY}&format=json&limit=20&offset=0`;
         console.log('Fetching votes from:', votesUrl.replace(CONGRESS_API_KEY, 'HIDDEN'));
         const votesResponse = await fetch(votesUrl);
         
         if (!votesResponse.ok) {
             const errorText = await votesResponse.text();
             console.error('Votes API Error:', errorText);
-            throw new Error(`Congress API votes request failed: ${votesResponse.status} - ${errorText}`);
+            // Continue with bills data even if votes fetch fails
+            console.log('Continuing with bills data only');
+            const allBills = [
+                ...(houseBillsData.bills || []).map(bill => ({
+                    ...bill,
+                    chamber: 'House',
+                    type: 'hr'
+                })),
+                ...(senateBillsData.bills || []).map(bill => ({
+                    ...bill,
+                    chamber: 'Senate',
+                    type: 's'
+                }))
+            ];
+
+            return {
+                bills: allBills.map(bill => ({
+                    id: bill.number || 'Unknown',
+                    type: 'bill',
+                    title: bill.title || bill.shortTitle || 'Untitled Bill',
+                    introducedDate: bill.introducedDate,
+                    sponsor: bill.sponsor?.name || 'Unknown Sponsor',
+                    chamber: bill.chamber,
+                    latestAction: bill.latestAction?.text || 'No action recorded',
+                    congress: '118',
+                    url: `https://www.congress.gov/bill/118th-congress/${bill.type}/${bill.number}`
+                })).sort((a, b) => new Date(b.introducedDate) - new Date(a.introducedDate)),
+                votes: [] // Return empty votes array if fetch fails
+            };
         }
         
         const votesData = await votesResponse.json();

@@ -103,6 +103,21 @@
     margin: 10px 0;
 }
 
+.vote-counts {
+    display: flex;
+    gap: 20px;
+    margin: 10px 0;
+    font-weight: 500;
+}
+
+.vote-counts .yea {
+    color: #2f855a;
+}
+
+.vote-counts .nay {
+    color: #c53030;
+}
+
 .vote-count {
     display: flex;
     gap: 20px;
@@ -126,6 +141,15 @@
 
 .view-more:hover {
     text-decoration: underline;
+}
+
+.no-data {
+    text-align: center;
+    padding: 20px;
+    background: #f7fafc;
+    border-radius: 8px;
+    color: #4a5568;
+    font-style: italic;
 }
 
 .skeleton-loader {

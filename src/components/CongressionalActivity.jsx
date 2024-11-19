@@ -118,35 +118,32 @@ const CongressionalActivity = () => {
 
                 {activeTab === 'votes' && (
                     <div className="votes-list">
+                        <h2>Recent Votes</h2>
                         {activities.votes?.length === 0 ? (
                             <p className="no-data">No recent votes available</p>
                         ) : (
                             activities.votes?.map(vote => (
                                 <div key={vote.id} className="activity-card">
+                                    <div className="chamber-badge">{vote.chamber}</div>
                                     <h3>{vote.question}</h3>
                                     <div className="vote-meta">
-                                        <span className="chamber">{vote.chamber}</span>
                                         <span className="date">
-                                            {formatDate(vote.date)}
+                                            Date: {formatDate(vote.date)}
                                         </span>
+                                        <span className="result">Result: {vote.result}</span>
                                     </div>
-                                    <div className="vote-results">
-                                        <div className="vote-count">
-                                            <span className="yea">Yea: {vote.totalYea}</span>
-                                            <span className="nay">Nay: {vote.totalNay}</span>
-                                        </div>
-                                        <span className="result">Result: {vote.result || 'Pending'}</span>
+                                    <div className="vote-counts">
+                                        <span className="yea">Yea: {vote.totalYea}</span>
+                                        <span className="nay">Nay: {vote.totalNay}</span>
                                     </div>
-                                    {vote.url && (
-                                        <a 
-                                            href={vote.url} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer" 
-                                            className="view-more"
-                                        >
-                                            View Vote Details
-                                        </a>
-                                    )}
+                                    <a 
+                                        href={vote.url} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="view-more"
+                                    >
+                                        View Vote Details
+                                    </a>
                                 </div>
                             ))
                         )}
