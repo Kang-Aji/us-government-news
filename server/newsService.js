@@ -14,12 +14,21 @@ export async function fetchNewsArticles() {
     const url = `${NEWS_API_URL}?q=${encodeURIComponent(queryString)}&lang=en&sortby=publishedAt&from=${fromDateString}&max=100&apikey=${NEWS_API_KEY}`;
     
     console.log('Fetching news from Gnews API...');
+    console.log('Using URL:', url.replace(NEWS_API_KEY, '****'));
+    
     const response = await fetch(url);
     
     if (!response.ok) {
-      const error = await response.json();
-      console.error('Gnews API Error:', error);
-      throw new Error(error.message || `News API request failed with status ${response.status}`);
+      const errorText = await response.text();
+      console.error('Gnews API Error Response:', errorText);
+      let errorMessage;
+      try {
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.errors?.[0]?.message || errorJson.message || 'Unknown API error';
+      } catch (e) {
+        errorMessage = errorText || `HTTP error! status: ${response.status}`;
+      }
+      throw new Error(errorMessage);
     }
     
     const data = await response.json();

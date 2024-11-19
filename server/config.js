@@ -1,4 +1,4 @@
-export const NEWS_API_KEY = 'da1bed8486239fb1c07410cf138453f5';
+export const NEWS_API_KEY = process.env.NEWS_API_KEY;
 export const NEWS_API_URL = 'https://gnews.io/api/v4/search';
 
 export const OFFICIALS = [
