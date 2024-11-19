@@ -54,10 +54,10 @@ export const useArticles = (filters, searchTerm) => {
       
       setArticles(filteredData);
       setError(null);
-    } catch (err) {
-      console.error('Error fetching articles:', err);
-      setError('Failed to load articles. Please try again later.');
-      setArticles([]);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      setError('Error loading articles: ' + (error.response?.data?.message || error.message || 'Please check if the NEWS_API_KEY is properly configured'));
+      setLoading(false);
     } finally {
       setLoading(false);
     }
