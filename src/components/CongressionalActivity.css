@@ -5,6 +5,27 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.congressional-activity.error {
+    text-align: center;
+    padding: 40px 20px;
+    color: #dc3545;
+}
+
+.congressional-activity.error .retry-button {
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.congressional-activity.error .retry-button:hover {
+    background: #c82333;
+}
+
 .tabs {
     display: flex;
     gap: 10px;
