@@ -60,11 +60,17 @@ app.get('/api/articles', async (req, res) => {
 // Congressional Activity endpoint
 app.get('/api/congressional-activity', async (req, res) => {
   try {
+    console.log('Fetching congressional activity...');
     const activities = await fetchCongressionalActivity();
+    console.log('Successfully fetched congressional activity');
     res.json(activities);
   } catch (error) {
-    console.error('Error fetching congressional activity:', error);
-    res.status(500).json({ error: 'Failed to fetch congressional activity' });
+    console.error('Error in /api/congressional-activity:', error);
+    res.status(500).json({ 
+      error: 'Failed to fetch congressional activity',
+      details: error.message,
+      timestamp: new Date().toISOString()
+    });
   }
 });
 

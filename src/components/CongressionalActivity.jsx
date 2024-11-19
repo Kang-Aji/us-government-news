@@ -14,15 +14,20 @@ const CongressionalActivity = () => {
 
     const fetchActivities = async () => {
         try {
+            setLoading(true);
+            setError(null);
+            console.log('Fetching congressional activities...');
+            
             const response = await fetch('/api/congressional-activity');
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || 'Failed to fetch congressional activities');
-            }
             const data = await response.json();
+            
+            if (!response.ok) {
+                console.error('Error response:', data);
+                throw new Error(data.details || data.error || 'Failed to fetch congressional activities');
+            }
+            
             console.log('Received congressional data:', data);
             setActivities(data);
-            setError(null);
         } catch (err) {
             console.error('Error fetching congressional activities:', err);
             setError(err.message || 'Error loading congressional activities');
