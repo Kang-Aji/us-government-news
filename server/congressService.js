@@ -3,21 +3,34 @@ import { CONGRESS_API_KEY } from './config.js';
 
 export async function fetchCongressionalActivity() {
     try {
-        // Fetch recent bills
-        const billsUrl = `https://api.congress.gov/v3/bill/118/introduced?api_key=${CONGRESS_API_KEY}&format=json&limit=20&offset=0`;
-        console.log('Fetching bills from:', billsUrl.replace(CONGRESS_API_KEY, 'HIDDEN'));
-        const billsResponse = await fetch(billsUrl);
+        // Fetch recent bills from both House and Senate
+        const houseBillsUrl = `https://api.congress.gov/v3/bill/118/hr?api_key=${CONGRESS_API_KEY}&format=json&limit=10&offset=0`;
+        console.log('Fetching House bills from:', houseBillsUrl.replace(CONGRESS_API_KEY, 'HIDDEN'));
+        const houseBillsResponse = await fetch(houseBillsUrl);
         
-        if (!billsResponse.ok) {
-            const errorText = await billsResponse.text();
-            console.error('Bills API Error:', errorText);
-            throw new Error(`Congress API bills request failed: ${billsResponse.status} - ${errorText}`);
+        if (!houseBillsResponse.ok) {
+            const errorText = await houseBillsResponse.text();
+            console.error('House Bills API Error:', errorText);
+            throw new Error(`Congress API House bills request failed: ${houseBillsResponse.status} - ${errorText}`);
         }
         
-        const billsData = await billsResponse.json();
-        console.log('Bills response:', JSON.stringify(billsData, null, 2));
+        const houseBillsData = await houseBillsResponse.json();
+        console.log('House Bills response:', JSON.stringify(houseBillsData, null, 2));
+
+        const senateBillsUrl = `https://api.congress.gov/v3/bill/118/s?api_key=${CONGRESS_API_KEY}&format=json&limit=10&offset=0`;
+        console.log('Fetching Senate bills from:', senateBillsUrl.replace(CONGRESS_API_KEY, 'HIDDEN'));
+        const senateBillsResponse = await fetch(senateBillsUrl);
         
-        // Fetch recent votes from the House
+        if (!senateBillsResponse.ok) {
+            const errorText = await senateBillsResponse.text();
+            console.error('Senate Bills API Error:', errorText);
+            throw new Error(`Congress API Senate bills request failed: ${senateBillsResponse.status} - ${errorText}`);
+        }
+        
+        const senateBillsData = await senateBillsResponse.json();
+        console.log('Senate Bills response:', JSON.stringify(senateBillsData, null, 2));
+        
+        // Fetch recent votes
         const votesUrl = `https://api.congress.gov/v3/house/votes/2024/1?api_key=${CONGRESS_API_KEY}&format=json&limit=20&offset=0`;
         console.log('Fetching votes from:', votesUrl.replace(CONGRESS_API_KEY, 'HIDDEN'));
         const votesResponse = await fetch(votesUrl);
@@ -32,28 +45,42 @@ export async function fetchCongressionalActivity() {
         console.log('Votes response:', JSON.stringify(votesData, null, 2));
         
         // Process and combine the data
+        const allBills = [
+            ...(houseBillsData.bills || []).map(bill => ({
+                ...bill,
+                chamber: 'House',
+                type: 'hr'
+            })),
+            ...(senateBillsData.bills || []).map(bill => ({
+                ...bill,
+                chamber: 'Senate',
+                type: 's'
+            }))
+        ];
+
         const activities = {
-            bills: billsData?.bills?.map(bill => ({
-                id: bill.number || bill.billNumber || 'Unknown',
+            bills: allBills.map(bill => ({
+                id: bill.number || 'Unknown',
                 type: 'bill',
                 title: bill.title || bill.shortTitle || 'Untitled Bill',
                 introducedDate: bill.introducedDate,
                 sponsor: bill.sponsor?.name || 'Unknown Sponsor',
+                chamber: bill.chamber,
                 latestAction: bill.latestAction?.text || 'No action recorded',
-                congress: bill.congress || '118',
-                url: bill.url || `https://www.congress.gov/bill/118th-congress/house-bill/${bill.number}`
-            })) || [],
-            votes: votesData?.votes?.vote?.map(vote => ({
+                congress: '118',
+                url: `https://www.congress.gov/bill/118th-congress/${bill.type}/${bill.number}`
+            })).sort((a, b) => new Date(b.introducedDate) - new Date(a.introducedDate)),
+            votes: (votesData.votes || []).map(vote => ({
                 id: vote.rollCall || 'Unknown',
                 type: 'vote',
                 chamber: 'House',
-                date: vote.updateDate || vote.date,
+                date: vote.date || vote.updateDate,
                 question: vote.question || vote.description || 'Unknown Question',
                 result: vote.result || 'Pending',
                 totalYea: vote.totals?.yea || vote.yeas || 0,
                 totalNay: vote.totals?.nay || vote.nays || 0,
-                url: vote.url || `https://www.congress.gov/roll-call-vote/118-1/house/${vote.rollCall}`
-            })) || []
+                url: `https://www.congress.gov/roll-call-vote/118-1/house/${vote.rollCall}`
+            }))
         };
 
         console.log('Processed activities:', JSON.stringify(activities, null, 2));

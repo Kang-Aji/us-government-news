@@ -93,6 +93,7 @@ const CongressionalActivity = () => {
                         ) : (
                             activities.bills?.map(bill => (
                                 <div key={bill.id} className="activity-card">
+                                    <div className="chamber-badge">{bill.chamber}</div>
                                     <h3>{bill.title}</h3>
                                     <div className="bill-meta">
                                         <span className="sponsor">Sponsor: {bill.sponsor}</span>
