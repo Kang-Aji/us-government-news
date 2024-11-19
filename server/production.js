@@ -7,6 +7,7 @@ import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
 import { fetchNewsArticles } from './newsService.js';
+import { fetchCongressionalActivity } from './congressService.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -53,6 +54,17 @@ app.get('/api/articles', async (req, res) => {
   } catch (error) {
     console.error('Error fetching articles:', error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Congressional Activity endpoint
+app.get('/api/congressional-activity', async (req, res) => {
+  try {
+    const activities = await fetchCongressionalActivity();
+    res.json(activities);
+  } catch (error) {
+    console.error('Error fetching congressional activity:', error);
+    res.status(500).json({ error: 'Failed to fetch congressional activity' });
   }
 });
 

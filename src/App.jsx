@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import Analytics from './components/Analytics';
 import Navbar from './components/Navbar';
 import Newsletter from './components/Newsletter';
+import CongressionalActivity from './components/CongressionalActivity';
 import { useSocket } from './hooks/useSocket';
 import { useArticles } from './hooks/useArticles';
 import { useTrendingOfficials } from './hooks/useTrendingOfficials';
@@ -99,7 +100,7 @@ function App() {
             filters={filters}
           />
         </div>
-        <div className="content">
+        <div className="content-grid">
           <div className="main-feed">
             {articlesState.error ? (
               <div className="error-message">Error loading articles: {articlesState.error}</div>
@@ -133,6 +134,7 @@ function App() {
               error={null}
             />
             <Newsletter />
+            <CongressionalActivity />
           </aside>
         </div>
       </main>

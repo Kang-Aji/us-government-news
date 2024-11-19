@@ -1,5 +1,6 @@
 export const NEWS_API_KEY = process.env.NEWS_API_KEY;
 export const NEWS_API_URL = 'https://gnews.io/api/v4/search';
+export const CONGRESS_API_KEY = process.env.CONGRESS_API_KEY || 'LxUgd6WZ53dxu1I9BeKbFb7UoDAbvIf7u6rYSiCw';
 
 export const OFFICIALS = [
   'Joe Biden',

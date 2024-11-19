@@ -69,10 +69,23 @@ h1 {
 }
 
 /* Content layout */
-.content {
+.content-grid {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 2rem;
+  grid-template-columns: 1fr 350px;
+  gap: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.main-feed {
+  min-width: 0;
+}
+
+aside {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 /* Main feed */
@@ -159,7 +172,7 @@ h1 {
     padding: 1rem;
   }
   
-  .content {
+  .content-grid {
     grid-template-columns: 1fr;
   }
   
@@ -178,7 +191,7 @@ h1 {
     padding: 1rem;
   }
   
-  .content {
+  .content-grid {
     grid-template-columns: 1fr;
   }
   
