@@ -19,7 +19,7 @@ export async function fetchNewsArticles() {
     if (!response.ok) {
       const error = await response.json();
       console.error('Gnews API Error:', error);
-      throw new Error(error.message || 'News API request failed');
+      throw new Error(error.message || `News API request failed with status ${response.status}`);
     }
     
     const data = await response.json();

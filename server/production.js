@@ -41,6 +41,26 @@ app.set('trust proxy', 1);
 // Serve static files from the dist directory
 app.use(express.static(join(__dirname, '../dist')));
 
+// API Routes
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'healthy' });
+});
+
+app.get('/api/articles', async (req, res) => {
+  try {
+    const articles = await fetchNewsArticles();
+    res.json(articles);
+  } catch (error) {
+    console.error('Error fetching articles:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Serve index.html for all other routes (SPA support)
+app.get('*', (req, res) => {
+  res.sendFile(join(__dirname, '../dist/index.html'));
+});
+
 // Create HTTP server
 const httpServer = createServer(app);
 
@@ -54,26 +74,6 @@ const io = new Server(httpServer, {
   // Configure for Heroku's WebSocket requirements
   transports: ['websocket', 'polling'],
   path: '/socket.io/'
-});
-
-// API endpoints
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'healthy' });
-});
-
-app.get('/api/articles', async (req, res) => {
-  try {
-    const articles = await fetchNewsArticles();
-    res.json(articles);
-  } catch (error) {
-    console.error('Error fetching articles:', error);
-    res.status(500).json({ error: 'Failed to fetch articles' });
-  }
-});
-
-// Serve index.html for all routes to support client-side routing
-app.get('*', (req, res) => {
-  res.sendFile(join(__dirname, '../dist/index.html'));
 });
 
 // Socket.IO connection handling

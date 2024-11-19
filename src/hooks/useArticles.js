@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { API_BASE_URL } from '../config';
 
 export const useArticles = (filters, searchTerm) => {
   const [articles, setArticles] = useState([]);
@@ -8,7 +9,7 @@ export const useArticles = (filters, searchTerm) => {
   const fetchArticles = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/articles');
+      const response = await fetch(`${API_BASE_URL}/api/articles`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
